@@ -122,7 +122,7 @@ defmodule Rumbl.Multimedia do
   end
 
   defp user_videos_query(query, %Accounts.User{id: user_id}) do
-    from(v in query, where: v.user_ud == ^user_id)
+    from(v in query, where: v.user_id == ^user_id)
   end
 
   def list_alphabetical_categories do
