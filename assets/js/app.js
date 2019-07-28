@@ -3,13 +3,10 @@
 // its own CSS file.
 import css from "../css/app.css"
 
-import Player from './player'
-const video = document.getElementById("video")
-if (video) {
-  Player.init(video.id, video.getAttribute("data-player-id"), () => {
-    console.log("player ready")
-  })
-}
+import socket from './socket'
+import Video from './video'
+
+Video.init(socket, document.getElementById('video'))
 
 // webpack automatically bundles all modules in your
 // entry points. Those entry points can be configured
