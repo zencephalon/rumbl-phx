@@ -34,6 +34,7 @@
     <footer class="container">
     Made with luv by Matt
     </footer>
+    <script>window.userToken = "<%= assigns[:user_token] %>"</script>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>
