@@ -15,7 +15,10 @@ const Video = {
     const msgContainer = document.getElementById('msg-container');
     const msgInput = document.getElementById('msg-input');
     const postButton = document.getElementById('msg-submit');
-    const vidChannel = socket.channel(`videos:${videoId}`)
+    let lastSeenId = 0
+    const vidChannel = socket.channel(`videos:${videoId}`, () => {
+      return { last_seen_id: lastSeenId }
+    })
 
     postButton.addEventListener('click', e => {
       const payload = { body: msgInput.value, at: Player.getCurrentTime() };
@@ -25,11 +28,22 @@ const Video = {
     })
 
     vidChannel.on('new_annotation', resp => {
+      lastSeenId = resp.id
+      console.log({ resp })
       this.renderAnnotation(msgContainer, resp);
+    })
+
+    msgContainer.addEventListener('click', e => {
+      e.preventDefault()
+      const seconds = e.target.getAttribute('data-seek') || e.target.parentNode.getAttribute('data-seek')
+      if (!seconds) { return }
+      Player.seekTo(seconds)
     })
 
     vidChannel.join()
       .receive('ok', ({ annotations }) => {
+        const ids = annotations.map(ann => ann.id)
+        if (ids.length > 0) { lastSeenId = Math.max() }
         this.scheduleMessages(msgContainer, annotations)
       })
       .receive('error', reason => console.log('join failed', reason))
@@ -41,7 +55,6 @@ const Video = {
   },
   renderAnnotation(msgContainer, { user, body, at }) {
     const template = document.createElement("div");
-    console.log({ user })
 
     template.innerHTML = `
     <a href="#" data-seek="${this.esc(at)}">
